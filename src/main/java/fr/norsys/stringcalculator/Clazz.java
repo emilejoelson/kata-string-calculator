@@ -5,32 +5,35 @@ import java.util.List;
 
 public class Clazz {
     public static int Add(String numbers) {
-        if (numbers == null || numbers.length() == 0) {
+        if (numbers == "" ) {
             return 0;
         }
 
-        String delimiter = ",";
-        if (numbers.startsWith("//")) {
-            int delimiterStartIndex = numbers.indexOf("[") + 1;
-            int delimiterEndIndex = numbers.indexOf("]");
-            if (delimiterStartIndex > 0 && delimiterEndIndex > 0) {
-                delimiter = numbers.substring(delimiterStartIndex, delimiterEndIndex);
-            } else {
-                delimiter = numbers.substring(2, numbers.indexOf("\n"));
+        String del = ",";
+        if(numbers.startsWith("//")){
+            int firstDelIndex = numbers.indexOf("["+1);
+            int lastDelIndex = numbers.indexOf("]");
+
+            if(firstDelIndex>0 && lastDelIndex>0){
+                del = numbers.substring(firstDelIndex,lastDelIndex);
             }
-            numbers = numbers.substring(numbers.indexOf("\n") + 1);
+            else{
+                del = numbers.substring(2,numbers.indexOf("\n"));
+            }
+            numbers = numbers.substring(numbers.indexOf("\n")+1);
         }
+
 
         numbers = numbers.trim();
 
-        String[] delimiters = delimiter.split("\\]\\[");
+        String[] delimiters = del.split("\\]\\[");
 
         StringBuilder regexBuilder = new StringBuilder("[,\n");
         for (String delim : delimiters) {
             String escapedDelimiter = delim.replaceAll("([\\[\\](){}+\\.^$|\\\\])", "\\\\$1");
             regexBuilder.append(escapedDelimiter).append("|");
         }
-        regexBuilder.deleteCharAt(regexBuilder.length() - 1); 
+        regexBuilder.deleteCharAt(regexBuilder.length() - 1);
         regexBuilder.append("]");
 
         String[] A = numbers.split(regexBuilder.toString());

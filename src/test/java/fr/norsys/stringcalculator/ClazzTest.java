@@ -47,7 +47,7 @@ public  class ClazzTest {
         assertEquals(1,Clazz.Add("1,\n"));
    }
 
-    @Test
+   @Test
     public void testFive(){
         assertEquals(3,Clazz.Add("//;\n1;2"));
     }
@@ -68,6 +68,15 @@ public  class ClazzTest {
         Assertions.assertEquals(2,Clazz.Add("2,1001"));
     }
 
+    @Test
+    public void testEight(){
+        Assertions.assertEquals(6,Clazz.Add("//[***]\n1***2***3"));
+    }
+
+    @Test
+    public void testNine(){
+        Assertions.assertEquals(6,Clazz.Add("//[*][%]\n1*2*3"));
+    }
 
 
 }

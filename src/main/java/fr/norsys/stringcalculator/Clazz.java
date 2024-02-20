@@ -5,39 +5,53 @@ import java.util.List;
 
 public class Clazz {
     public static int Add(String numbers) {
-        if (numbers == null || numbers.length() ==0) {
+        if (numbers == null || numbers.length() == 0) {
             return 0;
         }
+
         String delimiter = ",";
         if (numbers.startsWith("//")) {
-            int delimiterIndex = numbers.indexOf("\n");
-            delimiter = numbers.substring(2, delimiterIndex);
-            numbers = numbers.substring(delimiterIndex + 1);
+            int delimiterStartIndex = numbers.indexOf("[") + 1;
+            int delimiterEndIndex = numbers.indexOf("]");
+            if (delimiterStartIndex > 0 && delimiterEndIndex > 0) {
+                delimiter = numbers.substring(delimiterStartIndex, delimiterEndIndex);
+            } else {
+                delimiter = numbers.substring(2, numbers.indexOf("\n"));
+            }
+            numbers = numbers.substring(numbers.indexOf("\n") + 1);
         }
+
         numbers = numbers.trim();
 
-        String[] A = numbers.replaceAll(delimiter, ",").split("[,\n]");
+        String[] delimiters = delimiter.split("\\]\\[");
 
-        int s = 0;
+        StringBuilder regexBuilder = new StringBuilder("[,\n");
+        for (String delim : delimiters) {
+            String escapedDelimiter = delim.replaceAll("([\\[\\](){}+\\.^$|\\\\])", "\\\\$1");
+            regexBuilder.append(escapedDelimiter).append("|");
+        }
+        regexBuilder.deleteCharAt(regexBuilder.length() - 1); 
+        regexBuilder.append("]");
+
+        String[] A = numbers.split(regexBuilder.toString());
+
+        int s= 0;
         List<Integer> neg = new ArrayList<>();
 
-        for (String n : A) {
-            if (n.length()!=0) {
+        for (String nA : A) {
+            if (!nA.isEmpty()) {
                 try {
-                    int n1 = Integer.parseInt(n.trim());
-                    if (n1 < 0) {
-                        neg.add(n1);
-                    } else if(n1 <= 1000) {
-                        s += n1;
+                    int n = Integer.parseInt(nA.trim());
+                    if (n < 0) {
+                        neg.add(n);
+                    } else if (n <= 1000) {
+                        s += n;
                     }
-
-
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid number: " + n);
+                    System.err.println("Invalid number: " + nA);
                 }
             }
         }
-
 
         if (!neg.isEmpty()) {
             StringBuilder sb = new StringBuilder("Negatives not allowed: ");
